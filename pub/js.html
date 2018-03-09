@@ -1,0 +1,132 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Probeaufgabe</title>
+    <style type="text/css">
+        #crossword {
+            text-align:center;
+        }
+
+        .crossword {
+            border-collapse:collapse;
+            font-family:"Courier New", Courier, monospace;
+            margin-left:auto;
+            margin-right:auto;
+            clear:both;
+            margin-top:10px;
+            margin-bottom:10px;
+        }
+
+        .crossword td {
+            border:1px solid black;
+            padding:0;
+            margin:0;
+            vertical-align:middle;
+            padding:0;
+            text-align:center;
+            width:30px;
+            height:30px;
+        }
+
+        .crossword .no-border {
+            border:none;
+        }
+
+        #clues {
+            margin:auto;
+        }
+
+        #clues td {
+            vertical-align:top;
+        }
+    </style>
+    <script type="text/javascript" src="../assets/logic.js"></script>
+    <script type="text/javascript" src="../assets/words.js"></script>
+
+    <script type="text/javascript">
+        var wordList = [];
+
+        var c = 0;
+        while(c < 15)
+        {
+            var randomNumber = Math.floor(Math.random()* words.length) + 1;
+            if(!wordList.hasOwnProperty(randomNumber))
+            {
+                wordList[randomNumber] = words[randomNumber];
+                c++;
+            }
+        }
+
+        //var wordList = fetch('../assets/words.json');
+        window.onload = function(){
+            // words[i] correlates to clues[i]
+            //var words = ["KLUG", "FARBFERNSEHEN", "KOCHGLAS", "PAPYRUS", "KLAERANLAGE", "CAMPANILE", "EBENE", "SUBIRA", "ABG", "FREUDE", "ALTER", "THOMSON", "BADENWEILER", "SCHEINWERFER"];
+            //var clues = ["RATSAM", "BUNTE TELEVISION", "CHEMISCHES EXPERIMENTIERGEFÄß", "PAPIERÄHNLICHES SCHREIBMATERIAL", "ABWASSERREINIGUNG", "KIRCHTURM IN ITALIEN", "FLACHLAND", "SPANISCHER MUSIKFORSCHER", "ABKÜRZUNG FÜR ABGEORDNETER", "VERGNÜGEN", "LEBENSABEND", "ENTDECKER DES ELEKTRONS", "BADE-, KURORT", "BÜHNENFACHLICHER AUSDRUCK / BEGRIFF"];
+            var words = [];
+            var clues = [];
+            wordList.forEach(function(word)
+            {
+                words.push(word[0]);
+                clues.push(word[1]);
+            });
+
+            // Create crossword object with the words and clues
+            var cw = new Crossword(words, clues);
+
+            // create the crossword grid (try to make it have a 1:1 width to height ratio in 10 tries)
+            var tries = 10;
+            var grid = cw.getSquareGrid(tries);
+
+            // report a problem with the words in the crossword
+            if(grid == null){
+                var bad_words = cw.getBadWords();
+                var str = [];
+                for(var i = 0; i < bad_words.length; i++){
+                    str.push(bad_words[i].word);
+                }
+                alert("Kann kein Rätsel bauen mit folgenden Wörtern:\n" + str.join("\n"));
+                return;
+            }
+
+            // turn the crossword grid into HTML
+            var show_answers = true;
+            document.getElementById("crossword").innerHTML = CrosswordUtils.toHtml(grid, show_answers);
+
+            // make a nice legend for the clues
+            var legend = cw.getLegend(grid);
+            addLegendToPage(legend);
+        };
+
+        function addLegendToPage(groups){
+            for(var k in groups){
+                var html = [];
+                for(var i = 0; i < groups[k].length; i++){
+                    html.push("<li><strong>" + groups[k][i]['position'] + ".</strong> " + groups[k][i]['clue'] + "</li>");
+                }
+                document.getElementById(k).innerHTML = html.join("\n");
+            }
+        }
+    </script>
+
+</head>
+
+<body>
+<div id="crossword"></div>
+<table id="clues">
+    <thead>
+    <tr>
+        <th>Horizontal</th>
+        <th>Vertikal</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td><ul id="across"></ul></td>
+        <td><ul id="down"></ul></td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
