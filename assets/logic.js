@@ -387,6 +387,7 @@ var CrosswordUtils = {
                 }
 
                 if(is_start_of_word) {
+                    css_class = 'start';
                     html.push("<td class='" + css_class + "' title='" + r + ", " + c + "' data-label='" + label + "'>");
                     label++;
                 } else {
